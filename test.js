@@ -55,9 +55,9 @@ $.tuanIds = [];
 /*
 url签名参数
  */
-const random = 'cNlpbJCwIFx/';
-let token = `tk01wc7951ceea8nVzY0UlBvK3QvPAfwG6UuVMo3YIwnuyPtwgIZr9BSCkJT96NMHRqNWCO5x0zbNsEA2bkjst3tYymV`;
-let fingerprint = 6318883301648161;
+const random = 'CyBCImpJGNh8';
+let token = `tk01wde891d11a8nQlI1dEkwTkxug4aM7s5bkj8xMfpuV1uXE7LstuY8OXv/wURlfgod0++N2uZIs9LygevsBOYcz/3Q`;
+let fingerprint = 2035190996947161;
 const appId = 10001;
 
 let fingerprintJD = '';
@@ -150,31 +150,34 @@ function setUrlSignParams()
         }
         continue
       }
-      await jdDreamFactory()
-      if (helpAu === true) await helpAuthor();
+      //
+      console.log('调试')
+      console.log(decrypt(1616579976155,'_time,pin,placeId,zone', '', 'https://m.jingxi.com/dreamfactory/usermaterial/PickUpComponent?zone=dream_factory&placeId=3&pin=IBd_gpaZod90Q3nvJejLnw==&_time=1616579976155&_stk=_time,pin,placeId,zone&_ste=1&h5st=20210324175936155;2035190996947161;10001;tk01wde891d11a8nQlI1dEkwTkxug4aM7s5bkj8xMfpuV1uXE7LstuY8OXv/wURlfgod0++N2uZIs9LygevsBOYcz/3Q;0a2d2fe48ec2de7a88e80d792f6beb90cf99b740be5f6f8e1d45c24a6881575b&_=1616579976156&sceneval=2&g_login_type=1&callback=jsonpCBKQ&g_ty=ls'))
+      // await jdDreamFactory()
+      // if (helpAu === true) await helpAuthor();
     }
   }
-  for (let i = 0; i < cookiesArr.length; i++) {
-    if (cookiesArr[i]) {
-      cookie = cookiesArr[i];
-      $.isLogin = true;
-      await TotalBean();
-      if (!$.isLogin) {
-        continue
-      }
-      console.log(`\n参加作者的团\n`);
-      await joinLeaderTuan();//参团
-      $.UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
-      console.log(`\n账号内部相互进团\n`);
-      for (let item of $.tuanIds) {
-        console.log(`${$.UserName} 去参加团 ${item}\n`);
-        await JoinTuan(item);
-      }
-    }
-  }
-  if ($.isNode() && allMessage) {
-    await notify.sendNotify(`${$.name}`, `${allMessage}`, { url: jxOpenUrl })
-  }
+  // for (let i = 0; i < cookiesArr.length; i++) {
+  //   if (cookiesArr[i]) {
+  //     cookie = cookiesArr[i];
+  //     $.isLogin = true;
+  //     await TotalBean();
+  //     if (!$.isLogin) {
+  //       continue
+  //     }
+  //     console.log(`\n参加作者的团\n`);
+  //     await joinLeaderTuan();//参团
+  //     $.UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
+  //     console.log(`\n账号内部相互进团\n`);
+  //     for (let item of $.tuanIds) {
+  //       console.log(`${$.UserName} 去参加团 ${item}\n`);
+  //       await JoinTuan(item);
+  //     }
+  //   }
+  // }
+  // if ($.isNode() && allMessage) {
+  //   await notify.sendNotify(`${$.name}`, `${allMessage}`, { url: jxOpenUrl })
+  // }
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -207,7 +210,7 @@ async function jdDreamFactory() {
 
 
 // 收取发电机的电力
-function collectElectricity(facId = $.factoryId, help = false, master) {
+function p(facId = $.factoryId, help = false, master) {
   return new Promise(async resolve => {
     // let url = `/dreamfactory/generator/CollectCurrentElectricity?zone=dream_factory&apptoken=&pgtimestamp=&phoneID=&factoryid=${facId}&doubleflag=1&sceneval=2&g_login_type=1`;
     // if (help && master) {
@@ -1148,7 +1151,7 @@ async function joinLeaderTuan() {
 }
 function JoinTuan(tuanId, stk = '_time,activeId,tuanId') {
   return new Promise((resolve) => {
-    let url = `https://m.jingxi.com/dreamfactory/tuan/JoinTuan?activeId=${escape(tuanActiveId)}&tuanId=${escape(tuanId)}&_time=${Date.now()}&_=${Date.now()}&sceneval=2&g_login_type=1&_ste=1`
+    let url = `https://m.jingxi.com/dreamfactory/tuan/JoinTuan?activeId=${escape(tuanActiveId)}&tuanId=${escape(tuanId)}&_time=${Date.now()}&_=${Date.now()}&sceneval=2&g_login_type=1&_ste=1&stk=${stk}`
     url += `&h5st=${decrypt(Date.now(), stk, '', url)}`
     const options = {
       'url': url,
@@ -1654,10 +1657,25 @@ function decrypt(time, stk, type, url) {
 
     let hash1;
     if (fingerprintJD && urlSignTokenJD) {
-      hash1 = enCryptMethodJD(urlSignTokenJD, fingerprintJD, timestamp, appId, $.CryptoJS);
+      console.log(typeof fingerprintJD)
+      hash1 = enCryptMethodJD(urlSignTokenJD, fingerprintJD.toString(), timestamp.toString(), appId.toString(), $.CryptoJS);
+      console.log('调试')
+      let test = $.CryptoJS.HmacMD5(`${token}${fingerprint}${timestamp}${appId}${random}`, token).toString($.CryptoJS.enc.Hex);
+      let test2 = $.CryptoJS.HmacMD5(`${urlSignTokenJD}${fingerprintJD}${timestamp}${appId}${random}`, token).toString($.CryptoJS.enc.Hex);
+      console.log(test)
+      console.log(test2)
+      console.log(hash1.toString($.CryptoJS.enc.Hex))
+      console.log(`tk01wde891d11a8nQlI1dEkwTkxug4aM7s5bkj8xMfpuV1uXE7LstuY8OXv/wURlfgod0++N2uZIs9LygevsBOYcz/3Q` === urlSignTokenJD ? 'true' : 'false')
+      console.log(`tk01wde891d11a8nQlI1dEkwTkxug4aM7s5bkj8xMfpuV1uXE7LstuY8OXv/wURlfgod0++N2uZIs9LygevsBOYcz/3Q` === token ? 'true' : 'false')
+      console.log(2035190996947161 === parseInt(fingerprintJD) ? 'true' : 'false')
+      console.log(2035190996947161 === fingerprint ? 'true' : 'false')
+      console.log(fingerprint)
+      console.log(fingerprintJD)
+      console.log(urlSignTokenJD)
+      console.log(fingerprintJD)
     } else {
       const str = `${token}${fingerprint}${timestamp}${appId}${random}`;
-      hash1 = $.CryptoJS.HmacSHA512(str, token);
+      hash1 = $.CryptoJS.HmacMD5(str, token);
     }
     let st = '';
     stk.split(',').map((item, index) => {
@@ -1687,7 +1705,7 @@ function getUrlQueryParams(url_string, param)
       let data = url.searchParams.get(param);
       return data ? data : '';
   } else {
-    if (url_string.indexOf("?") != -1) {    //判断是否有参数
+      if (url_string.indexOf("?") != -1) {    //判断是否有参数
       let strSub =null;
       let str = url_string.split("?");
       let strs = str[1].split("&");
